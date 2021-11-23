@@ -4,7 +4,7 @@ struct node_t{
 	int numOfTokens;
 	struct node_t* children[5]; 
 };
-void parser(char*);
+struct node_t* parser(char*);
 char* filterLine(char*);
 char* getNewLine(char*);
 void filterToken();

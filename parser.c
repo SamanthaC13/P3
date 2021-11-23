@@ -14,7 +14,7 @@ FILE* input;
 int len=124;
 char* line;
 struct tokenType currentToken;
-void parser(char* filename)
+struct node_t* parser(char* filename)
 //function that starts off the parser and collects the root when the parser is done and prints the tree 
 //after the parsing is complete
 {
@@ -42,7 +42,7 @@ void parser(char* filename)
 	{
 		//If the EOF token is gotton succesfully then the tree is printed
 		printf("\nParsed through successfully\n");
-		printTree(root,0);
+		return (root);
 	}
 	else
 	{

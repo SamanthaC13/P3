@@ -6,6 +6,7 @@ Class:CS4280
 #include<stdlib.h>
 #include<string.h>
 #include "parser.h"
+#include "statsem.h"
 int main(int argc, char**argv)
 {
 	char* filename;                   
@@ -36,5 +37,7 @@ int main(int argc, char**argv)
 		filename=strcat(filename,".fs");
 		
 	}
-	parser(filename);
+	struct node_t* root;
+	root=parser(filename);
+	traverseTree(root);
 }
