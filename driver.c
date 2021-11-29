@@ -4,6 +4,7 @@ Class:CS4280
 */
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdbool.h>
 #include<string.h>
 #include "parser.h"
 #include "statsem.h"
@@ -39,5 +40,5 @@ int main(int argc, char**argv)
 	}
 	struct node_t* root;
 	root=parser(filename);
-	traverseTree(root);
+//	traverseTree(root);
 }

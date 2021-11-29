@@ -42,6 +42,7 @@ struct node_t* parser(char* filename)
 	{
 		//If the EOF token is gotton succesfully then the tree is printed
 		printf("\nParsed through successfully\n");
+		printTree(root,0);
 		return (root);
 	}
 	else
@@ -141,7 +142,6 @@ struct node_t* vars()
 	if(strcmp(currentToken.tokenInstance,"declare")==0)
 	{
 		struct node_t* p=getNode("vars");
-		addTokenToNode(p);
 		getNewToken();
 		if(currentToken.tokenID==IDTK)
 		{
@@ -157,7 +157,6 @@ struct node_t* vars()
 					getNewToken();
 					if(currentToken.tokenID==SMCLNTK)
 					{
-						addTokenToNode(p);
 						getNewToken();
 						p->children[0]=vars();
 						return p;
@@ -193,13 +192,11 @@ struct node_t* block()
 	if(strcmp(currentToken.tokenInstance,"start")==0)
 	{
 		struct node_t* p=getNode("block");
-		addTokenToNode(p);
 		getNewToken();
 		p->children[0]=vars();
 		p->children[1]=stats();
 		if(strcmp(currentToken.tokenInstance,"stop")==0)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -230,7 +227,6 @@ struct node_t* stat()
 		p->children[0]=in();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -244,7 +240,6 @@ struct node_t* stat()
 		p->children[0]=label();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -258,7 +253,6 @@ struct node_t* stat()
 		p->children[0]=goTo();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -277,7 +271,6 @@ struct node_t* stat()
 		p->children[0]=out();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -291,7 +284,6 @@ struct node_t* stat()
 		p->children[0]=assign();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -305,7 +297,6 @@ struct node_t* stat()
 		p->children[0]=loop();
 		if(currentToken.tokenID==SMCLNTK)
 		{	
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -319,7 +310,6 @@ struct node_t* stat()
 		p->children[0]=If();
 		if(currentToken.tokenID==SMCLNTK)
 		{
-			addTokenToNode(p);
 			getNewToken();
 			return p;
 		}
@@ -354,8 +344,7 @@ struct node_t* in()
 {
 	struct node_t* p=getNode("in");
 	if(strcmp(currentToken.tokenInstance,"listen")==0)
-	{
-		addTokenToNode(p);	
+	{	
 		getNewToken();
 		if(currentToken.tokenID==IDTK)
 		{
@@ -376,8 +365,7 @@ struct node_t* in()
 struct node_t* label()
 //function for the label production rule
 {
-	struct node_t* p=getNode("label");
-	addTokenToNode(p);	
+	struct node_t* p=getNode("label");	
 	getNewToken();
 	if(currentToken.tokenID==IDTK)
 	{
@@ -394,7 +382,6 @@ struct node_t* goTo()
 //function for the goTo production rule
 {
 	struct node_t* p=getNode("goTo");
-	addTokenToNode(p);
 	getNewToken();
 	if(currentToken.tokenID==IDTK)
 	{
@@ -411,7 +398,6 @@ struct node_t* out()
 //function for the out production rule
 {
 	struct node_t* p=getNode("out");
-	addTokenToNode(p);
 	getNewToken();
 	p->children[0]=expr();
 	return p;
@@ -518,7 +504,6 @@ struct node_t* assign()
 //function for the assign production rule
 {
 	struct node_t* p=getNode("assign");
-	addTokenToNode(p);
 	getNewToken();
 	if(currentToken.tokenID==IDTK)
 	{
@@ -607,7 +592,6 @@ struct node_t* loop()
 //function for loop(while) production rule
 {
 	struct node_t* p=getNode("loop");
-	addTokenToNode(p);
 	getNewToken();
 	if(currentToken.tokenID==LBKTK)
 	{
