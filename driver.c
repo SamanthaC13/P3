@@ -40,5 +40,5 @@ int main(int argc, char**argv)
 	}
 	struct node_t* root;
 	root=parser(filename);
-//	traverseTree(root);
+	traverseTree(root);
 }

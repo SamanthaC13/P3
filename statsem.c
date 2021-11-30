@@ -8,15 +8,17 @@
 #include"token.h"
 #include"parser.h"
 #include"statsem.h"
-struct stackNode* symbolTableRoot;
+struct stackNode* head;
 struct stackNode* currentNode;
+struct stackNode** headP;
 void  traverseTree(struct node_t* p)
 //Function that traverses the tree using recursion in a pre-order traversal
 {
-	int i;
+	int i,varsFlag=0;
 	if(strcmp(p->nodeName,"vars")==0)
 	{
-		insert(p->startToken);	
+		varsFlag=1;
+		push(p->startToken);	
 	}
 //	printf("\n%*c%d:%s-",level*2,' ',level,p->nodeName);
 	if(p->startToken!=NULL)
@@ -26,7 +28,19 @@ void  traverseTree(struct node_t* p)
 		struct tokenType* tokenP=p->startToken;
 		while(j<p->numOfTokens)
 		{
-			printf(" %s",tokenP->tokenInstance);
+			//printf("\n %s",tokenP->tokenInstance);
+			if((tokenP->tokenID==IDTK)&&(varsFlag==0))
+			{
+				//printf("\n%s",tokenP->tokenInstance);
+				if(verify(tokenP->tokenInstance))
+				{
+					printf("\n%s-true",tokenP->tokenInstance);
+				}
+				else
+				{
+					printf("Static Semantic error- variable is not defined");
+				}
+			}
 			tokenP=tokenP->nextToken;
 			j++;
 		}
@@ -41,29 +55,31 @@ void  traverseTree(struct node_t* p)
 	}
 	return;
 }
-void insert(struct tokenType* addToken)
+void push(struct tokenType* addToken)
 {
-	if(symbolTableRoot=NULL)
+	struct stackNode* temp=malloc(sizeof(struct stackNode));
+	temp->IDtoken=addToken;
+	temp->next=NULL;
+	if(currentNode!=NULL)
 	{
-		symbolTableRoot->IDtoken=malloc(sizeof(struct tokenType));
-		symbolTableRoot->IDtoken=addToken;
-		symbolTableRoot->next=NULL;
-		currentNode=symbolTableRoot;
+		currentNode->next=temp;
+		currentNode=temp;	
 	}
 	else
 	{
-		struct stackNode* temp= malloc(sizeof(struct stackNode));
-		currentNode->next=temp;
-		temp->IDtoken=addToken;
-		currentNode->next=NULL;
+		currentNode=malloc(sizeof(struct stackNode));
 		currentNode=temp;
+		head=malloc(sizeof(struct stackNode));
+		head=currentNode;
+		headP=&head;
 	}
 }
 bool verify(char* identifier)
 {
-	struct stackNode* stackP=symbolTableRoot;
-	while(stackP->next!=NULL)
+	struct stackNode* stackP=*headP;
+	while(stackP!=NULL)
 	{
+		//printf("\n%s",stackP->IDtoken->tokenInstance);
 		if(strcmp(stackP->IDtoken->tokenInstance,identifier)==0)
 		{
 			return true;

@@ -2,7 +2,7 @@ struct stackNode{
 	struct tokenType* IDtoken;
 	struct stackNode* next;
 };
-void insert(struct tokenType*);
+void push(struct tokenType*);
 bool verify(char *); 
 /*void traverseTree(struct node_t*);
 void push(String);
