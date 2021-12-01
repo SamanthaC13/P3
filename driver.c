@@ -41,4 +41,5 @@ int main(int argc, char**argv)
 	struct node_t* root;
 	root=parser(filename);
 	traverseTree(root);
+	printf("Your program has parsed through sucessfully and has correct static semantics. YAY!\n");
 }

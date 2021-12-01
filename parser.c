@@ -41,15 +41,12 @@ struct node_t* parser(char* filename)
 	if(currentToken.tokenID=EOFTK)
 	{
 		//If the EOF token is gotton succesfully then the tree is printed
-		printf("\nParsed through successfully\n");
-		printTree(root,0);
 		return (root);
 	}
 	else
 	{
 		printf("\nParsed through but no EOF token\n");
 	}
-	printf("\n");
 }
 void  printTree(struct node_t* p, int level)
 //Function that prints the tree using recursion in a pre-order traversal
@@ -84,6 +81,10 @@ struct node_t* getNode(char* functionName)
 	struct node_t* p= malloc(sizeof(struct node_t));
 	p->nodeName=malloc(sizeof(char)*20);
 	strcpy(p->nodeName,functionName);
+	if(strcmp(p->nodeName,"block")==0)
+	{
+		p->blockVarCount=0;
+	}
 	return p;
 }
 void addTokenToNode(struct node_t* p)

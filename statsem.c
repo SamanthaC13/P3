@@ -11,27 +11,28 @@
 struct stackNode* head;
 struct stackNode* currentNode;
 struct stackNode** headP;
-int stackCount=0,blockFlag=0;
+int stackCount=0,blockFlag=0,varCount=0;
 void  traverseTree(struct node_t* p)
 //Function that traverses the tree using recursion in a pre-order traversal
 {
 	int i,varsFlag=0;
 	if(strcmp(p->nodeName,"vars")==0)
+	//if a vars node is encountered then the varsFlag is set to 1
 	{
 		varsFlag=1;	
 	}
-//	printf("\n%*c%d:%s-",level*2,' ',level,p->nodeName);
 	if(p->startToken!=NULL)
-	//In each node all the tokens in that node are printed also
+	//In each node all the tokens in that node are looped through
 	{
 		int j=0;
 		struct tokenType* tokenP=p->startToken;
 		while(j<p->numOfTokens)
-		{
-			//printf("\n %s",tokenP->tokenInstance);        
+		{   
 			if(tokenP->tokenID==IDTK)
+			//Looking for all the ID tokens to see if they need to be added to the stack or verified that they have been defined
 			{
 				if((varsFlag==1)&&(blockFlag==0))
+				//this option is for variables declared not in a block (global)
 				{
 					if(verify(tokenP->tokenInstance))
 					{	
@@ -40,18 +41,15 @@ void  traverseTree(struct node_t* p)
 					push(tokenP);
 				}
 				if((varsFlag==0)&&(blockFlag==0))
-				{	
-					//printf("\n%s",tokenP->tokenInstance);
-					if(verify(tokenP->tokenInstance))
-					{
-						printf("\n%s-true",tokenP->tokenInstance);
-					}
-					else
+				//This option is for variables that are used not in a block
+				{
+					if(!verify(tokenP->tokenInstance))
 					{
 						errorMsg(tokenP,1);
 					}
 				}
 				if((blockFlag==1)&&(varsFlag==0))
+				//this option is for variables that are being used in a block to make sure they were defined in the program
 				{
 					if(find(tokenP->tokenInstance)==-1)
 					{
@@ -59,14 +57,18 @@ void  traverseTree(struct node_t* p)
 					}
 				}
 				if((blockFlag==1)&&(varsFlag==1))
+				//this option is for variables defined in a block (local) there is a special case that accounts for variables that are defined with the same name 
+				//as a global variable they are allowed in the local scope 
 				{
+					varCount++;
 					if(find(tokenP->tokenInstance)!=-1)
 					{
-						errorMsg(tokenP,2);
+						if(find(tokenP->tokenInstance)>varCount)
+						{
+							errorMsg(tokenP,2);
+						}
 					}
 					push(tokenP);
-					p->blockVarCount++;
-					printf("\n%d",p->blockVarCount);
 				}
 			}
 			tokenP=tokenP->nextToken;
@@ -76,6 +78,7 @@ void  traverseTree(struct node_t* p)
 	for(i=0;i<5;i++)
 	{
 		if((strcmp(p->nodeName,"block")==0)&&(i==0))
+		//sets the flag for the start of a block
 		{
 			blockFlag=1;
 		}
@@ -85,21 +88,23 @@ void  traverseTree(struct node_t* p)
 			traverseTree(p->children[i]);
 		}
 		if((strcmp(p->nodeName,"block")==0)&&(i==1))
-		{
-			if(p->blockVarCount>0)
-			{
-				int k=0;
-				for(;k<p->blockVarCount;k++)
-				{	
-					pop();
-				}
+		//gets the end the block when it is being closed it pops all of its local variables off the stack and sets the blockFlag to 0 and the varCount to 0
+		{	
+			p->blockVarCount=varCount;
+			int k=0;
+			for(k=0;k<p->blockVarCount;k++)
+			{	
+				pop();
 			}
 			blockFlag=0;
+			varCount=0;
 		}
 	}
 	return;
 }
 void push(struct tokenType* addToken)
+//function that adds nodes to the stack the data is a token and there is a currentNode to keep track of the current (top) node and the head and head Pointer are represting the start or bootom of the stack
+//It also adds to the stack Count 
 {
 	struct stackNode* temp=malloc(sizeof(struct stackNode));
 	temp->IDtoken=addToken;
@@ -118,9 +123,10 @@ void push(struct tokenType* addToken)
 		headP=&head;
 	}
 	stackCount++;
-	printf("\npush-%s-%d",addToken->tokenInstance,stackCount);
 }
 void pop()
+//this function takes the top node off the stack it changes the value of the currentNode and frees the memory of the top node
+//It also takes one away from the stack count
 {
 	if(*headP==NULL)
 	{
@@ -133,30 +139,31 @@ void pop()
 		prev=deleteNode;
 		deleteNode=deleteNode->next;	
 	}
-	printf("\npop-%s",deleteNode->IDtoken->tokenInstance);
 	free(deleteNode);
 	currentNode=prev;
 	prev->next=NULL;
 	stackCount--;
 }
 int find(char* identifier)
+//this function find how far the node the idenitfer given is in is from the top of the stack
+//This is done by finding the node from the bottom of the stack and then taking the stack count minus that value 
+//If the identifier is not found then -1 is returned 
 {
 	struct stackNode* top=*headP;
 	int count=1;
 	while(top!=NULL)
 	{
-		printf("\n%s->",top->IDtoken->tokenInstance);
 		if(strcmp(top->IDtoken->tokenInstance,identifier)==0)
 		{
 			break;
 		}
 		count++;
 		top=top->next;		
-	}
-	printf("\nfound %s at %d-stackCount-%d",identifier,count,stackCount);	
+	}	
 	return (stackCount-count);
 }
 bool verify(char* identifier)
+//This function returns a true or false value based on wether the given identifier is in any of the node on the stack
 {
 	struct stackNode* stackP;
 	if(headP!=NULL)
@@ -179,6 +186,7 @@ bool verify(char* identifier)
 	return false;
 }
 void errorMsg(struct tokenType* token, int errorCase)
+//This function print error messages with the token Instance and the line number using the error case given 
 {
 	if(errorCase==1)
 	{
