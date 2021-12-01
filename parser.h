@@ -2,6 +2,7 @@ struct node_t{
 	char* nodeName;
 	struct tokenType* startToken;
 	int numOfTokens;
+	int blockVarCount;
 	struct node_t* children[5]; 
 };
 struct node_t* parser(char*);
