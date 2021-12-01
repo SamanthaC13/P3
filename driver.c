@@ -1,6 +1,6 @@
 /*Name: Samantha Craig
 Class:CS4280
-   Project P2
+   Project P3
 */
 #include<stdio.h>
 #include<stdlib.h>
